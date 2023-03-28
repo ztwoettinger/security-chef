@@ -9,8 +9,8 @@ resources:
     check_every: 8760h
 
   - name: version-build
-    type: git
-    icon: library
+    type: semver
+    icon: tag
     check_every: 8760h
     source:
       driver: git
@@ -20,7 +20,7 @@ resources:
       depth: 1
       file: version-build
 
-  - name: docker-registry
+  - name: security-chef
     type: registry-image
     icon: docker
     source:
@@ -33,9 +33,23 @@ resources:
 
 ########### Jobs ###########
 jobs:
+- name: set-build-version
+  public: true
+  build_logs_to_retain: 3
+  plan:
+  - get: source
+    trigger: true
+    version: every
+  - put: version-build
+    params: {pre: build}
+
 - name: build-and-push
   plan:
   - get: source
+    passed: [set-build-version]
+    trigger: true
+    params:
+      integration_tool: checkout
   - get: version-build
   - task: build-image
     privileged: true
@@ -50,10 +64,10 @@ jobs:
       outputs:
       - name: image
       params:
-        CONTEXT: source/Dockerfile
+        CONTEXT: source
       run:
         path: build
-  - put: docker-registry
+  - put: security-chef
     params:
       image: image/image.tar
       additional_tags: version-build/version
