@@ -50,7 +50,7 @@ jobs:
       outputs:
       - name: image
       params:
-        CONTEXT: source/Dockerfile
+        CONTEXT: source
       run:
         path: build
   - put: docker-registry
