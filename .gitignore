@@ -1,0 +1,5 @@
+__pycache__/
+coverage-reports/
+.coverage
+.pip_cache
+.pytest_cache
