@@ -5,28 +5,55 @@ resources:
     source:
       branch: main
       uri: https://github.com/ztwoettinger/security-chef
-      private_key: ((git-key))
+      # private_key: ((git-key))
+    check_every: 8760h
 
+  - name: version-build
+    type: git
+    icon: library
+    check_every: 8760h
+    source:
+      driver: git
+      uri: https://github.com/ztwoettinger/security-chef.git
+      # private_key: ((git-key))
+      branch: version
+      depth: 1
+      file: version-build
+
+  - name: docker-registry
+    type: registry-image
+    icon: docker
+    source:
+      repository: tigelton/security-chef
+      username: ((dockerhub-username))
+      password: ((dockerhub-password))
 
 ######### End Resources #########
 
 
 ########### Jobs ###########
 jobs:
-- name: hello-world-job
+- name: build-and-push
   plan:
-  - task: hello-world-task
+  - get: source
+  - get: version-build
+  - task: build-image
+    privileged: true
     config:
-      # Tells Concourse which type of worker this task should run on
       platform: linux
-      # This is one way of telling Concourse which container image to use for a
-      # task. We'll explain this more when talking about resources
       image_resource:
         type: registry-image
         source:
-          repository: busybox # images are pulled from docker hub by default
-      # The command Concourse will run inside the container
-      # echo "Hello world!"
+          repository: concourse/oci-build-task
+      inputs:
+      - name: source
+      outputs:
+      - name: image
+      params:
+        CONTEXT: source/Dockerfile
       run:
-        path: echo
-        args: ["Hello world!"]
+        path: build
+  - put: docker-registry
+    params:
+      image: image/image.tar
+      additional_tags: version-build/version
