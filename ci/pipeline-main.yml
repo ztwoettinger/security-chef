@@ -43,7 +43,7 @@ jobs:
   - put: version-build
     params: {pre: build}
 
-- name: build-and-push
+- name: quality-build
   plan:
   - get: source
     passed: [set-build-version]
@@ -51,6 +51,29 @@ jobs:
     params:
       integration_tool: checkout
   - get: version-build
+
+  - task: run-tests
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: library/python
+      inputs:
+      - name: source
+      outputs:
+      - name: sonarqube-analysis-input
+      run:
+        path: /bin/sh
+        args:
+          - -xc
+          - |
+            cp -r source/. sonarqube-analysis-input
+            cd sonarqube-analysis-input
+            pip install -r requirements.txt
+            chmod +x run-tests.sh
+            ./run-tests.sh
+
   - task: build-image
     privileged: true
     config:
