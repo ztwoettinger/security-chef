@@ -5,7 +5,7 @@ from mysite.myapp.views import views
 logger = logging.getLogger(__name__)
 
 def test_add_two_numbers_successfully():
-    actual_result = views.sample_function_add_two_numbers(2, 5)
+    actual_result = views.sample_function_add_two_numbers(2, 9)
     expected_result = 7
 
     assert actual_result == expected_result
