@@ -7,7 +7,7 @@ services:
     image: mysql:5.7
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: FizzBuzz12!
+      MYSQL_ROOT_PASSWORD: sql_root_password
       MYSQL_DATABASE: wordpress_database
       MYSQL_USER: wordpress_user
       MYSQL_PASSWORD: wordpress_user_password
