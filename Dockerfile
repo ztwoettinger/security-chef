@@ -21,4 +21,4 @@ RUN curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | 
 # Start server
 EXPOSE 8020
 STOPSIGNAL SIGTERM
-CMD ["/opt/app/start-server.sh"]
+CMD ["sh", "/opt/app/start-server.sh"]
