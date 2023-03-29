@@ -1,8 +1,7 @@
 from django.urls import path
-from .views import views, sbom_main
+from .views import new_page, views
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('jobs/', views.submit_repo_for_scan, name='submit_repo_for_scan'),
-    path('submit/', sbom_main.user_input, name='user_input'),
+    path('new_page/', new_page.render_new_page, name='new_page'),
 ]
